@@ -48,11 +48,11 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 // Student profiles
-export const studentProfiles = mysqlTable(
+export const studentProfiles = pgTable(
   "student_profiles",
   {
     id: serial("id").primaryKey(),
-    userId: int("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
     gradeLevel: varchar("grade_level", { length: 20 }).notNull(),
     county: varchar("county", { length: 100 }),
     school: varchar("school", { length: 255 }),
@@ -68,14 +68,14 @@ export type StudentProfile = typeof studentProfiles.$inferSelect;
 export type InsertStudentProfile = typeof studentProfiles.$inferInsert;
 
 // Quizzes
-export const quizzes = mysqlTable(
+export const quizzes = pgTable(
   "quizzes",
   {
     id: serial("id").primaryKey(),
-    userId: int("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
     topic: text("topic").notNull(),
     gradeLevel: varchar("grade_level", { length: 20 }),
-    source: sourceEnum.notNull(),
+    source: sourceEnum("source").notNull(),
     metadata: json("metadata"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
@@ -88,17 +88,17 @@ export type Quiz = typeof quizzes.$inferSelect;
 export type InsertQuiz = typeof quizzes.$inferInsert;
 
 // Questions
-export const questions = mysqlTable(
+export const questions = pgTable(
   "questions",
   {
     id: serial("id").primaryKey(),
-    quizId: int("quiz_id").notNull().references(() => quizzes.id, { onDelete: "cascade" }),
+    quizId: integer("quiz_id").notNull().references(() => quizzes.id, { onDelete: "cascade" }),
     question: text("question").notNull(),
-    questionType: questionTypeEnum.notNull(),
+    questionType: questionTypeEnum("question_type").notNull(),
     options: json("options"),
     correctAnswer: text("correct_answer").notNull(),
     explanation: text("explanation"),
-    points: int("points").default(10).notNull(),
+    points: integer("points").default(10).notNull(),
   },
   (table) => ({
     quizIdIdx: index("questions_quiz_id_idx").on(table.quizId),
@@ -109,16 +109,16 @@ export type Question = typeof questions.$inferSelect;
 export type InsertQuestion = typeof questions.$inferInsert;
 
 // Results
-export const results = mysqlTable(
+export const results = pgTable(
   "results",
   {
     id: serial("id").primaryKey(),
-    quizId: int("quiz_id").notNull().references(() => quizzes.id, { onDelete: "cascade" }),
-    userId: int("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-    score: int("score").notNull(),
-    totalPoints: int("total_points").notNull(),
-    xpEarned: int("xp_earned").default(0).notNull(),
-    coinsEarned: int("coins_earned").default(0).notNull(),
+    quizId: integer("quiz_id").notNull().references(() => quizzes.id, { onDelete: "cascade" }),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    score: integer("score").notNull(),
+    totalPoints: integer("total_points").notNull(),
+    xpEarned: integer("xp_earned").default(0).notNull(),
+    coinsEarned: integer("coins_earned").default(0).notNull(),
     feedback: json("feedback"),
     completedAt: timestamp("completed_at").defaultNow().notNull(),
   },
@@ -132,11 +132,11 @@ export type Result = typeof results.$inferSelect;
 export type InsertResult = typeof results.$inferInsert;
 
 // Notes
-export const notes = mysqlTable(
+export const notes = pgTable(
   "notes",
   {
     id: serial("id").primaryKey(),
-    userId: int("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
     title: varchar("title", { length: 255 }).notNull(),
     content: text("content").notNull(),
     subject: varchar("subject", { length: 100 }),
@@ -154,7 +154,7 @@ export type Note = typeof notes.$inferSelect;
 export type InsertNote = typeof notes.$inferInsert;
 
 // Past papers
-export const pastPapers = mysqlTable(
+export const pastPapers = pgTable(
   "past_papers",
   {
     id: serial("id").primaryKey(),
@@ -162,9 +162,9 @@ export const pastPapers = mysqlTable(
     subject: varchar("subject", { length: 100 }).notNull(),
     gradeLevel: varchar("grade_level", { length: 20 }).notNull(),
     examBoard: varchar("exam_board", { length: 50 }),
-    year: int("year"),
+    year: integer("year"),
     fileUrl: text("file_url"),
-    uploadedBy: int("uploaded_by").references(() => users.id, { onDelete: "set null" }),
+    uploadedBy: integer("uploaded_by").references(() => users.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
@@ -177,14 +177,14 @@ export type PastPaper = typeof pastPapers.$inferSelect;
 export type InsertPastPaper = typeof pastPapers.$inferInsert;
 
 // Leaderboard
-export const leaderboard = mysqlTable(
+export const leaderboard = pgTable(
   "leaderboard",
   {
     id: serial("id").primaryKey(),
-    userId: int("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
-    totalXp: int("total_xp").default(0).notNull(),
-    totalCoins: int("total_coins").default(0).notNull(),
-    rank: int("rank"),
+    userId: integer("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+    totalXp: integer("total_xp").default(0).notNull(),
+    totalCoins: integer("total_coins").default(0).notNull(),
+    rank: integer("rank"),
     county: varchar("county", { length: 100 }),
     school: varchar("school", { length: 255 }),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -198,12 +198,12 @@ export type Leaderboard = typeof leaderboard.$inferSelect;
 export type InsertLeaderboard = typeof leaderboard.$inferInsert;
 
 // Payments
-export const payments = mysqlTable(
+export const payments = pgTable(
   "payments",
   {
     id: serial("id").primaryKey(),
-    userId: int("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-    amount: int("amount").notNull(),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    amount: integer("amount").notNull(),
     currency: varchar("currency", { length: 3 }).default("KES").notNull(),
     status: varchar("status", { length: 20 }).default("pending").notNull(),
     transactionId: varchar("transaction_id", { length: 100 }).unique(),
