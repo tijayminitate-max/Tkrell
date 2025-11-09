@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="theme-color" content="#00BFA6" />
+    <meta name="description" content="Master KCPE, KCSE, and IGCSE with Mr. T, your AI tutor. Get instant questions, smart grading, and gamified learning." />
+    <link rel="icon" type="image/png" href="%VITE_APP_LOGO%" />
+    <link rel="apple-touch-icon" href="%VITE_APP_LOGO%" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>%VITE_APP_TITLE%</title>
+    <script>
+      // Suppress Vite HMR WebSocket errors BEFORE Vite loads
+      (function() {
+        // Patch WebSocket to prevent connection errors
+        const OriginalWebSocket = window.WebSocket;
+        window.WebSocket = class WebSocketProxy extends OriginalWebSocket {
+          constructor(url, protocols) {
+            // Suppress HMR WebSocket connections
+            if (url && (url.includes('localhost:5173') || url.includes('/@vite'))) {
+              // Create a dummy WebSocket that never connects
+              super('ws://localhost:1');
+              this.close();
+              return;
+            }
+            super(url, protocols);
+          }
+        };
+        
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        const suppressed = new Set();
+        
+        console.error = function(...args) {
+          const msg = String(args[0] || '');
+          if (msg.includes('websocket') || msg.includes('[vite]') || msg.includes('failed to connect')) {
+            suppressed.add(msg);
+            return;
+          }
+          originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+          const msg = String(args[0] || '');
+          if (msg.includes('websocket') || msg.includes('[vite]') || msg.includes('failed to connect')) {
+            suppressed.add(msg);
+            return;
+          }
+          originalWarn.apply(console, args);
+        };
+        
+        window.addEventListener('error', (e) => {
+          const msg = String(e.message || '');
+          if (msg.includes('websocket') || msg.includes('[vite]') || msg.includes('failed to connect')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }, true);
+        
+        window.addEventListener('unhandledrejection', (e) => {
+          const msg = String(e.reason || '');
+          if (msg.includes('websocket') || msg.includes('[vite]') || msg.includes('failed to connect')) {
+            e.preventDefault();
+            return false;
+          }
+        }, true);
+      })();
+    </script>
+    <!-- Add Google Fonts here, example:
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    -->
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- Vite HMR suppression is handled in main.tsx and above -->
+    <script
+      defer
+      src="%VITE_ANALYTICS_ENDPOINT%/umami"
+      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
+    <script>
+      // Register service worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .catch(err => {
+              // Silently fail if SW registration fails
+              if (!String(err).includes('websocket')) {
+                console.log('[PWA] Service Worker registration failed:', err);
+              }
+            });
+        });
+      }
+    </script>
+  </body>
+
+</html>

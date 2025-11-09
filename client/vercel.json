@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd .. && pnpm install && pnpm build",
+  "outputDirectory": "../dist/public",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://tkrell-backend.onrender.com/api/:path*"
+    }
+  ]
+}

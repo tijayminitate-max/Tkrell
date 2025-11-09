@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: tkrell-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: tkrell
+      MYSQL_USER: tkrell_user
+      MYSQL_PASSWORD: tkrell_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  app:
+    build: .
+    container_name: tkrell-app
+    environment:
+      DATABASE_URL: mysql://tkrell_user:tkrell_password@db:3306/tkrell
+      JWT_SECRET: your-secret-key-here-change-in-production
+      NODE_ENV: production
+      VITE_APP_TITLE: Tkrell - AI-Powered Education Platform
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local

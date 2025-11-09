@@ -1,0 +1,205 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-11-07",
+  "categories": {
+    "mathematics": {
+      "primary": [
+        {
+          "id": "math_p_001",
+          "question": "What is 45 + 37?",
+          "type": "mcq",
+          "options": ["72", "82", "92", "102"],
+          "correctAnswer": "82",
+          "explanation": "45 + 37 = 82. Add the ones: 5 + 7 = 12 (write 2, carry 1). Add the tens: 4 + 3 + 1 = 8.",
+          "gradeLevel": "P3",
+          "points": 5
+        },
+        {
+          "id": "math_p_002",
+          "question": "A farmer has 24 chickens. If 8 chickens lay eggs, how many chickens did not lay eggs?",
+          "type": "mcq",
+          "options": ["12", "14", "16", "18"],
+          "correctAnswer": "16",
+          "explanation": "24 - 8 = 16 chickens did not lay eggs.",
+          "gradeLevel": "P4",
+          "points": 5
+        },
+        {
+          "id": "math_p_003",
+          "question": "What is the area of a rectangle with length 8 cm and width 5 cm?",
+          "type": "short",
+          "correctAnswer": "40",
+          "explanation": "Area = length × width = 8 × 5 = 40 cm²",
+          "gradeLevel": "P6",
+          "points": 10
+        }
+      ],
+      "secondary": [
+        {
+          "id": "math_s_001",
+          "question": "Solve for x: 3x + 7 = 22",
+          "type": "mcq",
+          "options": ["3", "5", "7", "9"],
+          "correctAnswer": "5",
+          "explanation": "3x + 7 = 22 → 3x = 15 → x = 5",
+          "gradeLevel": "F1",
+          "points": 10
+        },
+        {
+          "id": "math_s_002",
+          "question": "What is the value of sin(30°)?",
+          "type": "mcq",
+          "options": ["0.5", "0.707", "0.866", "1"],
+          "correctAnswer": "0.5",
+          "explanation": "sin(30°) = 1/2 = 0.5",
+          "gradeLevel": "F3",
+          "points": 10
+        },
+        {
+          "id": "math_s_003",
+          "question": "Factorize: x² - 9",
+          "type": "short",
+          "correctAnswer": "(x + 3)(x - 3)",
+          "explanation": "This is a difference of squares: x² - 9 = (x + 3)(x - 3)",
+          "gradeLevel": "F2",
+          "points": 15
+        }
+      ]
+    },
+    "english": {
+      "primary": [
+        {
+          "id": "eng_p_001",
+          "question": "Choose the correct plural form: 'child'",
+          "type": "mcq",
+          "options": ["childs", "childes", "children", "childrens"],
+          "correctAnswer": "children",
+          "explanation": "'Child' is an irregular noun. Its plural form is 'children'.",
+          "gradeLevel": "P3",
+          "points": 5
+        },
+        {
+          "id": "eng_p_002",
+          "question": "What is a synonym for 'happy'?",
+          "type": "mcq",
+          "options": ["sad", "joyful", "angry", "tired"],
+          "correctAnswer": "joyful",
+          "explanation": "Joyful means feeling great happiness, which is a synonym for happy.",
+          "gradeLevel": "P5",
+          "points": 5
+        }
+      ],
+      "secondary": [
+        {
+          "id": "eng_s_001",
+          "question": "Identify the figure of speech: 'The classroom was a zoo.'",
+          "type": "mcq",
+          "options": ["Simile", "Metaphor", "Personification", "Hyperbole"],
+          "correctAnswer": "Metaphor",
+          "explanation": "This is a metaphor because it directly compares the classroom to a zoo without using 'like' or 'as'.",
+          "gradeLevel": "F2",
+          "points": 10
+        },
+        {
+          "id": "eng_s_002",
+          "question": "What is the theme of the poem 'If' by Rudyard Kipling?",
+          "type": "essay",
+          "correctAnswer": "The theme is about perseverance, self-discipline, and maintaining composure in difficult situations.",
+          "explanation": "The poem emphasizes resilience, patience, and moral integrity.",
+          "gradeLevel": "F4",
+          "points": 20
+        }
+      ]
+    },
+    "science": {
+      "primary": [
+        {
+          "id": "sci_p_001",
+          "question": "What is the process by which plants make their own food?",
+          "type": "mcq",
+          "options": ["Respiration", "Photosynthesis", "Digestion", "Transpiration"],
+          "correctAnswer": "Photosynthesis",
+          "explanation": "Photosynthesis is the process where plants use sunlight, water, and carbon dioxide to produce glucose and oxygen.",
+          "gradeLevel": "P5",
+          "points": 5
+        },
+        {
+          "id": "sci_p_002",
+          "question": "Name three states of matter.",
+          "type": "short",
+          "correctAnswer": "solid, liquid, gas",
+          "explanation": "The three common states of matter are solid, liquid, and gas.",
+          "gradeLevel": "P4",
+          "points": 10
+        }
+      ],
+      "secondary": [
+        {
+          "id": "sci_s_001",
+          "question": "What is the chemical formula for water?",
+          "type": "mcq",
+          "options": ["H2O", "CO2", "O2", "H2O2"],
+          "correctAnswer": "H2O",
+          "explanation": "Water consists of two hydrogen atoms and one oxygen atom, hence H2O.",
+          "gradeLevel": "F1",
+          "points": 10
+        },
+        {
+          "id": "sci_s_002",
+          "question": "Explain Newton's First Law of Motion.",
+          "type": "essay",
+          "correctAnswer": "An object at rest stays at rest, and an object in motion stays in motion with the same speed and direction unless acted upon by an external force.",
+          "explanation": "This is also known as the law of inertia.",
+          "gradeLevel": "F3",
+          "points": 20
+        }
+      ]
+    },
+    "social_studies": {
+      "primary": [
+        {
+          "id": "ss_p_001",
+          "question": "Who was the first President of Kenya?",
+          "type": "mcq",
+          "options": ["Daniel arap Moi", "Jomo Kenyatta", "Mwai Kibaki", "Uhuru Kenyatta"],
+          "correctAnswer": "Jomo Kenyatta",
+          "explanation": "Jomo Kenyatta was Kenya's first President, serving from 1964 to 1978.",
+          "gradeLevel": "P6",
+          "points": 5
+        },
+        {
+          "id": "ss_p_002",
+          "question": "What is the capital city of Kenya?",
+          "type": "short",
+          "correctAnswer": "Nairobi",
+          "explanation": "Nairobi is the capital and largest city of Kenya.",
+          "gradeLevel": "P3",
+          "points": 5
+        }
+      ],
+      "secondary": [
+        {
+          "id": "ss_s_001",
+          "question": "In what year did Kenya gain independence?",
+          "type": "mcq",
+          "options": ["1960", "1963", "1964", "1970"],
+          "correctAnswer": "1963",
+          "explanation": "Kenya gained independence from British colonial rule on December 12, 1963.",
+          "gradeLevel": "F2",
+          "points": 10
+        },
+        {
+          "id": "ss_s_002",
+          "question": "Explain the role of the Mau Mau in Kenya's independence struggle.",
+          "type": "essay",
+          "correctAnswer": "The Mau Mau were freedom fighters who fought against British colonial rule in Kenya during the 1950s, playing a crucial role in the independence movement.",
+          "explanation": "The Mau Mau uprising was a significant part of Kenya's struggle for independence.",
+          "gradeLevel": "F4",
+          "points": 20
+        }
+      ]
+    }
+  },
+  "totalQuestions": 20,
+  "usage": "These questions are available offline for practice when internet connection is unavailable."
+}

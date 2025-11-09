@@ -1,0 +1,89 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "pnpm install && pnpm build"
+  },
+  "deploy": {
+    "startCommand": "pnpm start",
+    "restartPolicyMaxRetries": 5,
+    "restartPolicyWindowSeconds": 600
+  },
+  "plugins": [
+    {
+      "source": "https://github.com/railwayapp/nixpacks-plugin-postgres"
+    }
+  ],
+  "variables": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "DATABASE_URL": {
+      "description": "PostgreSQL/Supabase connection string",
+      "required": true
+    },
+    "GOOGLE_CLIENT_ID": {
+      "description": "Google OAuth Client ID",
+      "required": true
+    },
+    "GOOGLE_CLIENT_SECRET": {
+      "description": "Google OAuth Client Secret",
+      "required": true,
+      "sensitive": true
+    },
+    "JWT_SECRET": {
+      "description": "JWT secret for session management",
+      "required": true,
+      "sensitive": true
+    },
+    "OPENAI_API_KEY": {
+      "description": "OpenAI API key for AI features",
+      "required": true,
+      "sensitive": true
+    },
+    "AWS_ACCESS_KEY_ID": {
+      "description": "AWS S3 access key",
+      "required": true,
+      "sensitive": true
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+      "description": "AWS S3 secret key",
+      "required": true,
+      "sensitive": true
+    },
+    "AWS_S3_BUCKET": {
+      "description": "AWS S3 bucket name",
+      "required": true
+    },
+    "AWS_REGION": {
+      "description": "AWS region",
+      "value": "us-east-1"
+    },
+    "CANVA_API_KEY": {
+      "description": "Canva API key for design features",
+      "required": false,
+      "sensitive": true
+    },
+    "MPESA_CONSUMER_KEY": {
+      "description": "M-Pesa Daraja API consumer key",
+      "required": false,
+      "sensitive": true
+    },
+    "MPESA_CONSUMER_SECRET": {
+      "description": "M-Pesa Daraja API consumer secret",
+      "required": false,
+      "sensitive": true
+    },
+    "TWILIO_ACCOUNT_SID": {
+      "description": "Twilio account SID for SMS",
+      "required": false,
+      "sensitive": true
+    },
+    "TWILIO_AUTH_TOKEN": {
+      "description": "Twilio auth token",
+      "required": false,
+      "sensitive": true
+    }
+  }
+}

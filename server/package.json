@@ -1,0 +1,12 @@
+{
+  "name": "tkrell-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "cd .. && pnpm install && pnpm build"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

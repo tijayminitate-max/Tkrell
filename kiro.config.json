@@ -1,0 +1,93 @@
+{
+  "name": "Tkrell",
+  "version": "1.0.0",
+  "description": "AI-Powered Education Platform for Kenyan Curriculum",
+  "author": "Tkrell Team",
+  "license": "MIT",
+  "deployment": {
+    "platform": "kiro",
+    "runtime": "node",
+    "nodeVersion": "22.13.0",
+    "buildCommand": "pnpm install && pnpm build",
+    "startCommand": "pnpm start",
+    "environment": {
+      "NODE_ENV": "production",
+      "DATABASE_URL": "required",
+      "OPENAI_API_KEY": "required",
+      "GOOGLE_CLIENT_ID": "required",
+      "GOOGLE_CLIENT_SECRET": "required",
+      "JWT_SECRET": "required",
+      "AWS_ACCESS_KEY_ID": "required",
+      "AWS_SECRET_ACCESS_KEY": "required",
+      "AWS_S3_BUCKET": "required",
+      "MPESA_CONSUMER_KEY": "optional",
+      "MPESA_CONSUMER_SECRET": "optional",
+      "TWILIO_ACCOUNT_SID": "optional",
+      "TWILIO_AUTH_TOKEN": "optional"
+    },
+    "ports": {
+      "http": 3000
+    },
+    "healthCheck": {
+      "path": "/api/health",
+      "interval": 30,
+      "timeout": 10
+    }
+  },
+  "features": {
+    "authentication": true,
+    "database": true,
+    "storage": true,
+    "payments": true,
+    "notifications": true
+  },
+  "scripts": {
+    "dev": "NODE_ENV=development tsx watch server/_core/index.ts",
+    "build": "vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "start": "NODE_ENV=production node dist/index.js",
+    "check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "db:push": "drizzle-kit generate && drizzle-kit migrate"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "express": "^4.21.2",
+    "drizzle-orm": "^0.44.5",
+    "mysql2": "^3.15.0",
+    "@trpc/server": "^11.6.0",
+    "@trpc/client": "^11.6.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vite": "^7.1.7",
+    "tailwindcss": "^4.1.14"
+  },
+  "documentation": {
+    "setup": "SETUP_INSTRUCTIONS.md",
+    "deployment": "DEPLOYMENT_GUIDE_COMPLETE.md",
+    "mpesa": "MPESA_SETUP_GUIDE.md",
+    "privacy": "PRIVACY.md",
+    "terms": "TERMS.md"
+  },
+  "features_implemented": [
+    "Kenyan Curriculum Database (KCPE, KCSE, IGCSE)",
+    "M-Pesa Payment Integration (Daraja API)",
+    "100+ Past Papers Database",
+    "AI-Powered Question Generation",
+    "Twilio SMS Notifications",
+    "School Partnerships Dashboard",
+    "PDF Upload & Processing",
+    "User Authentication (Google OAuth)",
+    "Leaderboards (School & Regional)",
+    "Dark Mode Support"
+  ],
+  "next_steps": [
+    "Configure environment variables",
+    "Set up database (TiDB recommended)",
+    "Configure OAuth credentials",
+    "Set up AWS S3 for file storage",
+    "Deploy to Kiro platform"
+  ]
+}

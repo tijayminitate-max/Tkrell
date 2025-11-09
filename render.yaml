@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: tkrell-backend
+    env: node
+    plan: free
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PORT
+        value: 10000
+
+databases:
+  - name: tkrell-db
+    databaseName: tkrell
+    user: tkrell
+    plan: free
