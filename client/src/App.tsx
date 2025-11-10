@@ -13,6 +13,9 @@ import Notes from "./pages/Notes";
 import Upload from "./pages/Upload";
 import Leaderboard from "./pages/Leaderboard";
 
+import Messages from "./pages/Messages";
+import Browse from "./pages/Browse";
+
 function Router() {
   return (
     <Switch>
@@ -20,6 +23,8 @@ function Router() {
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/quiz"} component={Quiz} />
       <Route path={"/chat"} component={Chat} />
+      <Route path={"/messages"} component={Messages} />
+      <Route path={"/browse"} component={Browse} />
       <Route path={"/profile"} component={Profile} />
       <Route path={"/notes"} component={Notes} />
       <Route path={"/upload"} component={Upload} />
