@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
   BookOpen, Zap, Target, Users, Search, ArrowRight, CheckCircle, 
   Star, Flame, Award, TrendingUp, Clock, Lightbulb
@@ -124,6 +125,7 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             {isAuthenticated ? (
               <>
                 <span className="text-sm font-medium hidden sm:inline">{user?.name}</span>
