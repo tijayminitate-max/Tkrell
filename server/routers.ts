@@ -46,7 +46,7 @@ function calculateLevel(xp: number): number {
 export const appRouter = router({
   system: systemRouter,
   uploads: uploadsRouter,
-  chat: chatRouter,
+  messaging: chatRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
@@ -288,72 +288,8 @@ export const appRouter = router({
       }),
   }),
 
-  // File upload and summarization
-  upload: router({
-    create: protectedProcedure
-      .input(z.object({
-        fileName: z.string(),
-        fileContent: z.string(), // Base64 encoded
-        mimeType: z.string(),
-      }))
-      .mutation(async ({ ctx, input }) => {
-        // Decode base64 and upload to S3
-        const buffer = Buffer.from(input.fileContent, 'base64');
-        const fileKey = `${ctx.user.id}/uploads/${input.fileName}-${randomSuffix()}`;
-        
-        const { url } = await storagePut(fileKey, buffer, input.mimeType);
-
-        // Create upload record
-        const uploadId = await db.createUpload({
-          userId: ctx.user.id,
-          fileName: input.fileName,
-          fileUrl: url,
-          fileKey,
-          mimeType: input.mimeType,
-          fileSize: buffer.length,
-        });
-
-        return { uploadId, url };
-      }),
-
-    summarize: protectedProcedure
-      .input(z.object({
-        uploadId: z.number(),
-        extractedText: z.string(),
-      }))
-      .mutation(async ({ ctx, input }) => {
-        // Generate summary and notes using AI
-        const systemPrompt = "You are Mr. T, a helpful study assistant. Create concise study notes from the provided text. Include key points, definitions, and important concepts.";
-        
-        const response = await invokeLLM({
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: `Summarize this text for study notes:\n\n${input.extractedText.slice(0, 4000)}` },
-          ],
-        });
-
-        const summary = typeof response.choices[0].message.content === 'string'
-          ? response.choices[0].message.content
-          : JSON.stringify(response.choices[0].message.content);
-
-        // Save as a note
-        await db.createNote({
-          userId: ctx.user.id,
-          title: `Summary from upload`,
-          content: summary,
-          source: "upload",
-        });
-
-        return { summary };
-      }),
-
-    list: protectedProcedure.query(async ({ ctx }) => {
-      return await db.getUserUploads(ctx.user.id);
-    }),
-  }),
-
   // Mr. T AI Chat
-  chat: router({
+  aiChat: router({
     send: protectedProcedure
       .input(z.object({
         message: z.string(),
