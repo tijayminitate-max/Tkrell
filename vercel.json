@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://tkrell-backend.onrender.com/api/:path*"
+      "destination": "https://tkrell.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
@@ -15,6 +15,6 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://tkrell-backend.onrender.com"
+    "VITE_API_URL": "https://tkrell.onrender.com"
   }
 }
