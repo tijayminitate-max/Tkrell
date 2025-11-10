@@ -7,6 +7,8 @@ import * as db from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import crypto from "crypto";
+import { uploadsRouter } from "./routers/uploads";
+import { chatRouter } from "./routers/chat";
 
 // Helper to generate random suffix for file keys
 function randomSuffix() {
@@ -43,6 +45,8 @@ function calculateLevel(xp: number): number {
 
 export const appRouter = router({
   system: systemRouter,
+  uploads: uploadsRouter,
+  chat: chatRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
