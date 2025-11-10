@@ -22,6 +22,8 @@ import { relations } from "drizzle-orm";
 export const roleEnum = pgEnum("role", ["user", "admin", "teacher"]);
 export const questionTypeEnum = pgEnum("question_type", ["mcq", "short", "essay"]);
 export const sourceEnum = pgEnum("source", ["ai", "upload", "seed"]);
+export const visibilityEnum = pgEnum("visibility", ["public", "private", "class"]);
+export const messageTypeEnum = pgEnum("message_type", ["text", "file", "image"]);
 
 // Core user table
 export const users = pgTable(
@@ -141,7 +143,7 @@ export const results = pgTable(
 export type Result = typeof results.$inferSelect;
 export type InsertResult = typeof results.$inferInsert;
 
-// Notes
+// Notes (Enhanced with visibility and tags)
 export const notes = pgTable(
   "notes",
   {
@@ -152,11 +154,17 @@ export const notes = pgTable(
     subject: varchar("subject", { length: 100 }),
     topic: varchar("topic", { length: 100 }),
     gradeLevel: varchar("grade_level", { length: 20 }),
+    visibility: visibilityEnum("visibility").default("private").notNull(),
+    tags: json("tags").$type<string[]>(),
+    views: integer("views").default(0).notNull(),
+    likes: integer("likes").default(0).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     userIdIdx: index("notes_user_id_idx").on(table.userId),
+    subjectIdx: index("notes_subject_idx").on(table.subject),
+    visibilityIdx: index("notes_visibility_idx").on(table.visibility),
   })
 );
 
@@ -296,6 +304,102 @@ export const classEnrollments = pgTable(
 export type ClassEnrollment = typeof classEnrollments.$inferSelect;
 export type InsertClassEnrollment = typeof classEnrollments.$inferInsert;
 
+// Uploads/Resources (for sharing study materials)
+export const uploads = pgTable(
+  "uploads",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description"),
+    fileUrl: text("file_url").notNull(),
+    fileType: varchar("file_type", { length: 50 }),
+    fileSize: integer("file_size"),
+    subject: varchar("subject", { length: 100 }),
+    topic: varchar("topic", { length: 100 }),
+    gradeLevel: varchar("grade_level", { length: 20 }),
+    visibility: visibilityEnum("visibility").default("private").notNull(),
+    tags: json("tags").$type<string[]>(),
+    downloads: integer("downloads").default(0).notNull(),
+    views: integer("views").default(0).notNull(),
+    likes: integer("likes").default(0).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("uploads_user_id_idx").on(table.userId),
+    subjectIdx: index("uploads_subject_idx").on(table.subject),
+    visibilityIdx: index("uploads_visibility_idx").on(table.visibility),
+  })
+);
+
+export type Upload = typeof uploads.$inferSelect;
+export type InsertUpload = typeof uploads.$inferInsert;
+
+// Conversations (for DM system)
+export const conversations = pgTable(
+  "conversations",
+  {
+    id: serial("id").primaryKey(),
+    participant1Id: integer("participant1_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    participant2Id: integer("participant2_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    lastMessageAt: timestamp("last_message_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    participant1Idx: index("conversations_participant1_idx").on(table.participant1Id),
+    participant2Idx: index("conversations_participant2_idx").on(table.participant2Id),
+    uniqueConversation: uniqueIndex("unique_conversation").on(table.participant1Id, table.participant2Id),
+  })
+);
+
+export type Conversation = typeof conversations.$inferSelect;
+export type InsertConversation = typeof conversations.$inferInsert;
+
+// Messages (for DM and class chat)
+export const messages = pgTable(
+  "messages",
+  {
+    id: serial("id").primaryKey(),
+    conversationId: integer("conversation_id").references(() => conversations.id, { onDelete: "cascade" }),
+    classId: integer("class_id").references(() => classes.id, { onDelete: "cascade" }),
+    senderId: integer("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    content: text("content").notNull(),
+    messageType: messageTypeEnum("message_type").default("text").notNull(),
+    fileUrl: text("file_url"),
+    isRead: boolean("is_read").default(false).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    conversationIdIdx: index("messages_conversation_id_idx").on(table.conversationId),
+    classIdIdx: index("messages_class_id_idx").on(table.classId),
+    senderIdIdx: index("messages_sender_id_idx").on(table.senderId),
+  })
+);
+
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = typeof messages.$inferInsert;
+
+// Likes (for notes and uploads)
+export const likes = pgTable(
+  "likes",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    noteId: integer("note_id").references(() => notes.id, { onDelete: "cascade" }),
+    uploadId: integer("upload_id").references(() => uploads.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("likes_user_id_idx").on(table.userId),
+    noteIdIdx: index("likes_note_id_idx").on(table.noteId),
+    uploadIdIdx: index("likes_upload_id_idx").on(table.uploadId),
+  })
+);
+
+export type Like = typeof likes.$inferSelect;
+export type InsertLike = typeof likes.$inferInsert;
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(studentProfiles, {
@@ -310,6 +414,9 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   referrals: many(referrals),
   classesTaught: many(classes),
   classEnrollments: many(classEnrollments),
+  uploads: many(uploads),
+  sentMessages: many(messages),
+  likes: many(likes),
 }));
 
 export const studentProfilesRelations = relations(studentProfiles, ({ one }) => ({
@@ -394,5 +501,55 @@ export const classEnrollmentsRelations = relations(classEnrollments, ({ one }) =
   student: one(users, {
     fields: [classEnrollments.studentId],
     references: [users.id],
+  }),
+}));
+
+export const uploadsRelations = relations(uploads, ({ one, many }) => ({
+  user: one(users, {
+    fields: [uploads.userId],
+    references: [users.id],
+  }),
+  likes: many(likes),
+}));
+
+export const conversationsRelations = relations(conversations, ({ one, many }) => ({
+  participant1: one(users, {
+    fields: [conversations.participant1Id],
+    references: [users.id],
+  }),
+  participant2: one(users, {
+    fields: [conversations.participant2Id],
+    references: [users.id],
+  }),
+  messages: many(messages),
+}));
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  conversation: one(conversations, {
+    fields: [messages.conversationId],
+    references: [conversations.id],
+  }),
+  class: one(classes, {
+    fields: [messages.classId],
+    references: [classes.id],
+  }),
+  sender: one(users, {
+    fields: [messages.senderId],
+    references: [users.id],
+  }),
+}));
+
+export const likesRelations = relations(likes, ({ one }) => ({
+  user: one(users, {
+    fields: [likes.userId],
+    references: [users.id],
+  }),
+  note: one(notes, {
+    fields: [likes.noteId],
+    references: [notes.id],
+  }),
+  upload: one(uploads, {
+    fields: [likes.uploadId],
+    references: [uploads.id],
   }),
 }));
