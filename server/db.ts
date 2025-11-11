@@ -45,10 +45,6 @@ export async function getDb() {
 }
 
 export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
-  }
-
   const db = await getDb();
   if (!db) {
     console.warn("[Database] Cannot upsert user: database not available");
@@ -56,54 +52,43 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 
   try {
-    const values: InsertUser = {
-      openId: user.openId,
-    };
-    const updateSet: Record<string, unknown> = {};
-
-    const textFields = ["name", "email", "loginMethod"] as const;
-    type TextField = (typeof textFields)[number];
-
-    const assignNullable = (field: TextField) => {
-      const value = user[field];
-      if (value === undefined) return;
-      const normalized = value ?? null;
-      values[field] = normalized;
-      updateSet[field] = normalized;
-    };
-
-    textFields.forEach(assignNullable);
-
-    if (user.lastSignedIn !== undefined) {
-      values.lastSignedIn = user.lastSignedIn;
-      updateSet.lastSignedIn = user.lastSignedIn;
-    }
-    if (user.role !== undefined) {
-      values.role = user.role;
-      updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
-      updateSet.role = 'admin';
+    // Check if user exists
+    let existing = null;
+    if (user.openId) {
+      const result = await db.select().from(users).where(eq(users.openId, user.openId)).limit(1);
+      existing = result.length > 0 ? result[0] : null;
+    } else if (user.email) {
+      const result = await db.select().from(users).where(eq(users.email, user.email)).limit(1);
+      existing = result.length > 0 ? result[0] : null;
     }
 
-    if (!values.lastSignedIn) {
-      values.lastSignedIn = new Date();
-    }
+    if (existing) {
+      // Update existing user
+      const updateData: Partial<InsertUser> = {};
+      if (user.name !== undefined) updateData.name = user.name;
+      if (user.email !== undefined) updateData.email = user.email;
+      if (user.password !== undefined) updateData.password = user.password;
+      if (user.loginMethod !== undefined) updateData.loginMethod = user.loginMethod;
+      if (user.lastSignedIn !== undefined) updateData.lastSignedIn = user.lastSignedIn;
+      if (user.role !== undefined) updateData.role = user.role;
+      
+      if (Object.keys(updateData).length > 0) {
+        await db.update(users).set(updateData).where(eq(users.id, existing.id));
+      }
+    } else {
+      // Insert new user
+      const values: InsertUser = {
+        openId: user.openId || `email_${user.email}`,
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        loginMethod: user.loginMethod || "email",
+        role: user.role || (user.openId === ENV.ownerOpenId ? "admin" : "user"),
+        lastSignedIn: user.lastSignedIn || new Date(),
+      };
 
-    // Set free trial expiration to 1 year from now for new users
-    if (!values.freeExpiresAt) {
-      const oneYearFromNow = new Date();
-      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-      values.freeExpiresAt = oneYearFromNow;
+      await db.insert(users).values(values);
     }
-
-    if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
-    }
-
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
-      set: updateSet,
-    });
   } catch (error) {
     console.error("[Database] Failed to upsert user:", error);
     throw error;
@@ -125,6 +110,13 @@ export async function getUserById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
   const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 

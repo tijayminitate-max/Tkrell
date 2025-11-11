@@ -12,7 +12,7 @@ import Profile from "./pages/Profile";
 import Notes from "./pages/Notes";
 import Upload from "./pages/Upload";
 import Leaderboard from "./pages/Leaderboard";
-
+import Login from "./pages/Login";
 import Messages from "./pages/Messages";
 import Browse from "./pages/Browse";
 
@@ -20,6 +20,7 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/login"} component={Login} />
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/quiz"} component={Quiz} />
       <Route path={"/chat"} component={Chat} />

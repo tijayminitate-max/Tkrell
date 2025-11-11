@@ -9,6 +9,7 @@ import { storagePut } from "./storage";
 import crypto from "crypto";
 import { uploadsRouter } from "./routers/uploads";
 import { chatRouter } from "./routers/chat";
+import { simpleAuthRouter } from "./routers/simpleAuth";
 
 // Helper to generate random suffix for file keys
 function randomSuffix() {
@@ -47,6 +48,7 @@ export const appRouter = router({
   system: systemRouter,
   uploads: uploadsRouter,
   messaging: chatRouter,
+  simpleAuth: simpleAuthRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
